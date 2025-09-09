@@ -1,28 +1,44 @@
 import streamlit as st
 import joblib
 
-# Load saved model and vectorizer
-model = joblib.load("spam_classifier_model.pkl")        # Your trained ML model
-vectorizer = joblib.load("vectorizer.pkl")        # Your TfidfVectorizer or CountVectorizer
+# Load model and vectorizer
+model = joblib.load("spam_classifier_model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
-# Streamlit app title
-st.title("📧 Email Spam Classifier")
-st.write("Enter your email content below to check if it's Spam or Not Spam.")
+# Page config
+st.set_page_config(
+    page_title="Spam Email Classifier",
+    page_icon="📧",
+    layout="centered"
+)
 
-# User input
-email_input = st.text_area("Email Content", height=200)
+# Title with style
+st.markdown(
+    "<h1 style='text-align: center; color: #2E86C1;'>📧 Spam Email Classifier</h1>",
+    unsafe_allow_html=True
+)
+
+st.write("Enter an email or message below to check if it’s **Spam** or **Ham (Not Spam)**.")
+
+# Input box
+user_input = st.text_area("✍️ Your message:", height=150)
 
 # Predict button
-if st.button("Check Email"):
-    if email_input.strip() == "":
-        st.warning("Please enter an email message to classify.")
-    else:
-        # Transform the input using the saved vectorizer
-        input_vector = vectorizer.transform([email_input])
-        prediction = model.predict(input_vector)[0]
+if st.button("🔍 Predict"):
+    if user_input.strip() != "":
+        input_tfidf = vectorizer.transform([user_input])
+        prediction = model.predict(input_tfidf)[0]
 
-        # Display result
         if prediction == 1:
-            st.error("⚠️ This email is classified as SPAM!")
+            st.error("🚨 **This message is Spam!**")
         else:
-            st.success("✅ This email is NOT Spam.")
+            st.success("✅ **This message is Ham (Not Spam).**")
+    else:
+        st.warning("⚠️ Please enter a message!")
+
+# Footer
+st.markdown(
+    "<hr><p style='text-align: center; color: grey;'>Built with ❤️ using Streamlit</p>",
+    unsafe_allow_html=True
+)
+
